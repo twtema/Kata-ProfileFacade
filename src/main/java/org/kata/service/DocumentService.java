@@ -13,7 +13,7 @@ public interface DocumentService {
 //    Список актуальных документов
 //    Список не актуальных документов
 
-    List<DocumentDto> getNotActualDocuments(String icp);
+    List<DocumentDto> getArchiveDocuments(String icp);
 
     List<DocumentDto> getActualDocuments(String icp);
 

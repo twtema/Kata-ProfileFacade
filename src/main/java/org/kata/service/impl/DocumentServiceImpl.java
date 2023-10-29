@@ -32,30 +32,6 @@ public class DocumentServiceImpl implements DocumentService {
         this.loaderWebClient = WebClient.create(urlProperties.getProfileServiceBaseUrl());
     }
 
-
-    /**
-     * Method to get a list of all documents by icp.
-     *
-     * @param icp - Individual's icp.
-     * @return List of DocumentDto.
-     */
-    public List<DocumentDto> getActualDocuments(String icp) {
-        return loaderWebClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(urlProperties.getProfileServiceGetActualDocuments())
-                        .queryParam("icp", icp)
-                        .build())
-                .retrieve()
-                .onStatus(HttpStatus::isError, response ->
-                        Mono.error(new DocumentsNotFoundException(
-                                "Documents with icp " + icp + " not found")
-                        )
-                )
-                .bodyToMono(new ParameterizedTypeReference<List<DocumentDto>>() {
-                })
-                .block();
-    }
-
     /**
      * Method to get a list of all documents by icp.
      *
@@ -64,24 +40,9 @@ public class DocumentServiceImpl implements DocumentService {
      */
     @Override
     public List<DocumentDto> getAllDocuments(String icp) {
-        List<DocumentDto> allDocuments = new ArrayList<>(getActualDocuments(icp));
-        allDocuments.addAll(getNotActualDocuments(icp));
-
-        return allDocuments;
-    }
-
-    /**
-     * Method to get a list of not actual documents by icp.
-     *
-     * @param icp - Individual's icp.
-     * @return List of DocumentDto.
-     */
-
-    @Override
-    public List<DocumentDto> getNotActualDocuments(String icp) {
         return loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(urlProperties.getProfileServiceGetNotActualDocuments())
+                        .path(urlProperties.getProfileServiceGetAllDocuments())
                         .queryParam("icp", icp)
                         .build())
                 .retrieve()
@@ -93,6 +54,29 @@ public class DocumentServiceImpl implements DocumentService {
                 .bodyToMono(new ParameterizedTypeReference<List<DocumentDto>>() {
                 })
                 .block();
+    }
+
+
+    /**
+     * Method to get a list of all documents by icp.
+     *
+     * @param icp - Individual's icp.
+     * @return List of DocumentDto.
+     */
+    public List<DocumentDto> getActualDocuments(String icp) {
+        return getAllDocuments(icp).stream().filter(DocumentDto::isActual).toList();
+    }
+
+
+    /**
+     * Method to get a list of archive documents by icp.
+     *
+     * @param icp - Individual's icp.
+     * @return List of DocumentDto.
+     */
+    @Override
+    public List<DocumentDto> getArchiveDocuments(String icp) {
+        return getAllDocuments(icp).stream().filter(doc -> !doc.isActual()).toList();
     }
 
     /**
