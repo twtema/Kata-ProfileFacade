@@ -8,22 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
-import org.junit.runner.RunWith;
 import org.kata.config.UrlProperties;
 import org.kata.dto.DocumentDto;
 import org.kata.dto.enums.DocumentType;
 import org.kata.exception.DocumentsNotFoundException;
-import org.kata.exception.IndividualNotFoundException;
 import org.kata.service.impl.DocumentServiceImpl;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.Date;
-import java.util.DuplicateFormatFlagsException;
 import java.util.List;
 
 
