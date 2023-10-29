@@ -37,8 +37,8 @@ public class DocumentControllerTest {
     public void getActualDocumentsTest() {
         final UrlProperties urlProperties = new UrlProperties();
         urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
-        urlProperties.setProfileServiceGetActualDocuments("v1/document/getActual");
-        urlProperties.setProfileServiceGetNotActualDocuments("v1/document/getNotActual");
+        urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
+
 
         DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
         ResponseEntity<List<DocumentDto>> response = documentController.getActualDocuments("203-29-3983");
@@ -54,7 +54,7 @@ public class DocumentControllerTest {
 
         log.info("Проверка на то что актуальный документ не равен неактуальному документу");
         Assert.assertNotEquals(documents.stream().findFirst().orElse(null)
-                , documentController.getNotActualDocuments("203-29-3983").getBody()
+                , documentController.getArchiveDocuments("203-29-3983").getBody()
                         .stream().findFirst().orElse(null));
 
         log.info("Проверка на вызов ошибки DocumentsNotFoundException");
@@ -68,19 +68,18 @@ public class DocumentControllerTest {
     public void getNotActualDocuments() {
         final UrlProperties urlProperties = new UrlProperties();
         urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
-        urlProperties.setProfileServiceGetActualDocuments("v1/document/getActual");
-        urlProperties.setProfileServiceGetNotActualDocuments("v1/document/getNotActual");
+        urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
         DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
 
         log.info("Проверка на вызов ошибки DocumentsNotFoundException");
         Assert.assertThrows(DocumentsNotFoundException.class, () -> {
-            documentController.getNotActualDocuments("203-29-398");
+            documentController.getArchiveDocuments("203-29-398");
         });
 
         log.info("Проверка на то что документ не равен null");
         Assert.assertNotNull(
-                documentController.getNotActualDocuments("203-29-3983")
+                documentController.getArchiveDocuments("203-29-3983")
         );
 
 
@@ -90,8 +89,7 @@ public class DocumentControllerTest {
     public void getAllDocuments() {
         final UrlProperties urlProperties = new UrlProperties();
         urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
-        urlProperties.setProfileServiceGetActualDocuments("v1/document/getActual");
-        urlProperties.setProfileServiceGetNotActualDocuments("v1/document/getNotActual");
+        urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
         DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
 
@@ -111,8 +109,7 @@ public class DocumentControllerTest {
     public void getDocument() {
         final UrlProperties urlProperties = new UrlProperties();
         urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
-        urlProperties.setProfileServiceGetActualDocuments("v1/document/getActual");
-        urlProperties.setProfileServiceGetNotActualDocuments("v1/document/getNotActual");
+        urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
         DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
 
