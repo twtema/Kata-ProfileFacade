@@ -80,9 +80,8 @@ public class DocumentControllerTest {
 
         log.info("Проверка на то что документ не равен null");
         Assert.assertNotNull(
-            documentController.getNotActualDocuments("203-29-3983")
+                documentController.getNotActualDocuments("203-29-3983")
         );
-
 
 
     }
@@ -126,7 +125,7 @@ public class DocumentControllerTest {
         log.info("Проверка на то что номер документа равен 5555555 ");
         Assert.assertEquals("55555555",
                 documentController.getDocument("203-29-3983",
-                        DocumentType.valueOf("FRGN_PASSPORT"))
+                                DocumentType.valueOf("FRGN_PASSPORT"))
                         .getBody().getDocumentNumber()
         );
 
