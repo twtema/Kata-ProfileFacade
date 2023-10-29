@@ -123,10 +123,11 @@ public class DocumentControllerTest {
                 documentController.getDocument("203-29-3983",
                         DocumentType.valueOf("RF_DRIVING_LICENSE"))
         );
-        log.info("Проверка на то что документ не равен null");
-        Assert.assertNotNull(
+        log.info("Проверка на то что номер документа равен 5555555 ");
+        Assert.assertEquals("55555555",
                 documentController.getDocument("203-29-3983",
                         DocumentType.valueOf("FRGN_PASSPORT"))
+                        .getBody().getDocumentNumber()
         );
 
         log.info("Проверка на вызов ошибки DocumentsNotFoundException");
