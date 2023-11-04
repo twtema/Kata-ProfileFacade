@@ -18,6 +18,7 @@
         <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
         <junit.version>4.13</junit.version>
         <javafaker.version>0.18</javafaker.version>
+        <mokito.version>5.6.0</mokito.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
@@ -77,7 +78,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.6.0</version>
+            <version>${mokito.version}</version>
             <scope>test</scope>
         </dependency>
 
