@@ -33,11 +33,6 @@ public class DocumentControllerTest {
         DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
         ResponseEntity<List<DocumentDto>> response = documentController.getActualDocuments("203-29-3983");
         List<DocumentDto> documents = response.getBody();
-//        // создание документа для проверки
-//        DocumentDto doc =new DocumentDto("203-29-3983", "FRGN_PASSPORT",
-//                "55555555","5872","1997-09-29T20:00:00.000+00:00",
-//                "2023-10-25T21:00:00.000+00:00" );
-
 
         log.info("Проверка на то что документ не равен null");
         Assert.assertNotNull(documents.stream().findFirst().orElse(null));
