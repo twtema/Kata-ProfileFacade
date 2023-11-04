@@ -7,11 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DocumentService {
-    // To Do
-//    Должны быть эндпоинты которые возвращают Список документов и
-//    документ в его еденичном представлении
-//    Список актуальных документов
-//    Список не актуальных документов
 
     List<DocumentDto> getArchiveDocuments(String icp);
 
