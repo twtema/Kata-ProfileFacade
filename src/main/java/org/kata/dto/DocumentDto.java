@@ -13,7 +13,6 @@ import java.util.Date;
 @Jacksonized
 public class DocumentDto {
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String icp;
 
     private DocumentType documentType;
