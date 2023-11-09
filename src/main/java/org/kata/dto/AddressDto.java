@@ -39,4 +39,3 @@ public class AddressDto {
     private boolean isActual;
 
 }
-
