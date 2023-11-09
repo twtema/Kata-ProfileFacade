@@ -1,6 +1,7 @@
 package org.kata;
 
 
+import org.kata.controller.IndividualController;
 import org.kata.feignclient.ProfileServiceFeignClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -17,8 +18,12 @@ public class ProfileFacadeApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(ProfileFacadeApplication.class, args);
+        ApplicationContext context = SpringApplication.run(ProfileFacadeApplication.class, args);
+        var client = context.getBean(ProfileServiceFeignClient.class);
+        System.out.println(client.getTest());
 
+        var client1 = context.getBean(IndividualController.class);
+        System.out.println(client1.getTest());
     }
 
 }

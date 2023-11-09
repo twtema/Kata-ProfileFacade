@@ -11,5 +11,4 @@ public interface IndividualAndRfPassportMapper {
 
     IndividualAndRfPassportDto toDto(IndividualDto individualDto);
 
-    IndividualDto toDto(IndividualAndRfPassportDto shortIndividualDto);
 }

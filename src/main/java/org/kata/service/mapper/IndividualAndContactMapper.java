@@ -9,5 +9,4 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface IndividualAndContactMapper {
     IndividualAndContactDto toDto(IndividualDto individualDto);
 
-    IndividualDto toDto(IndividualAndContactDto shortIndividualDto);
 }
