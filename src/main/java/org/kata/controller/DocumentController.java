@@ -72,7 +72,9 @@ public class DocumentController {
     public ResponseEntity<DocumentDto> getDocument
             (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp,
              @Parameter(description = "Document type", required = true) @RequestParam DocumentType documentType) {
-        return new ResponseEntity<>(documentService.getDocument(icp, documentType), HttpStatus.OK);
+        DocumentDto document = documentService.getDocument(icp, documentType);
+        document.maskPersonalData(); //маскируем данные
+        return new ResponseEntity<>(document, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

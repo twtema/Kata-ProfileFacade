@@ -26,4 +26,13 @@ public class DocumentDto {
     private Date expirationDate;
 
     private boolean actual;
+    public void maskPersonalData() {
+        // Применяем маскировку к полю documentNumber, если оно не пустое и имеет более 4 символов
+        if (documentNumber != null && documentNumber.length() > 4) {
+            String firstTwoChars = documentNumber.substring(0, 2);
+            String lastTwoChars = documentNumber.substring(documentNumber.length() - 2);
+            String maskedDocumentNumber = firstTwoChars + "****" + lastTwoChars;
+            this.documentNumber = maskedDocumentNumber;
+        }
+    }
 }
