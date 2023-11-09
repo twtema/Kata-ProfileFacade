@@ -17,9 +17,8 @@ public class ProfileFacadeApplication {
 
     public static void main(String[] args) {
 
-        ApplicationContext context = SpringApplication.run(ProfileFacadeApplication.class, args);
-        var client = context.getBean(ProfileServiceFeignClient.class);
-        System.out.println(client.getHello());
+        SpringApplication.run(ProfileFacadeApplication.class, args);
+
     }
 
 }

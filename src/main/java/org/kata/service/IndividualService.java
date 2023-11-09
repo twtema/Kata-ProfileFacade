@@ -7,10 +7,9 @@ import org.kata.dto.ShortIndividualDto;
 
 public interface IndividualService {
 
-    String getFeignHello();
-//    ShortIndividualDto getShortIndividualInformation(String icp);
-//    IndividualDto getFullIndividualInformation(String icp);
-//    IndividualAndContactDto getIndividualAndContactInformation(String icp);
-//    IndividualAndRfPassportDto getIndividualAndRfPassportInformation(String icp);
+    ShortIndividualDto getShortIndividualInformation(String icp);
+    IndividualDto getFullIndividualInformation(String icp);
+    IndividualAndContactDto getIndividualAndContactInformation(String icp);
+    IndividualAndRfPassportDto getIndividualAndRfPassportInformation(String icp);
 
 }

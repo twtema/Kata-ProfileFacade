@@ -20,37 +20,30 @@ public class IndividualServiceImp implements IndividualService {
 
     private final ProfileServiceFeignClient profileServiceFeignClient;
 
-//    private final ShortIndividualMapper shortIndividualMapper;
-//    private final IndividualAndContactMapper individualAndContactMapper;
-//    private final IndividualAndRfPassportMapper individualAndRfPassportMapper;
-
-
+    private final ShortIndividualMapper shortIndividualMapper;
+    private final IndividualAndContactMapper individualAndContactMapper;
+    private final IndividualAndRfPassportMapper individualAndRfPassportMapper;
 
     @Override
-    public String getFeignHello() {
-        return profileServiceFeignClient.getHello();
+    public ShortIndividualDto getShortIndividualInformation(String icp) {
+        IndividualDto individualDto = profileServiceFeignClient.getIndividual(icp);
+        return shortIndividualMapper.toDto(individualDto);
     }
 
-//    @Override
-//    public ShortIndividualDto getShortIndividualInformation(String icp) {
-//        IndividualDto individualDto = profileServiceFeignClient.getIndividual(icp);
-//        return shortIndividualMapper.toDto(individualDto);
-//    }
-//
-//    @Override
-//    public IndividualDto getFullIndividualInformation(String icp) {
-//        return profileServiceFeignClient.getIndividual(icp);
-//    }
-//
-//    @Override
-//    public IndividualAndContactDto getIndividualAndContactInformation(String icp) {
-//        IndividualDto individualDto = profileServiceFeignClient.getIndividual(icp);
-//        return individualAndContactMapper.toDto(individualDto);
-//    }
-//
-//    @Override
-//    public IndividualAndRfPassportDto getIndividualAndRfPassportInformation(String icp) {
-//        IndividualDto individualDto = profileServiceFeignClient.getIndividual(icp);
-//        return individualAndRfPassportMapper.toDto(individualDto);
-//    }
+    @Override
+    public IndividualDto getFullIndividualInformation(String icp) {
+        return profileServiceFeignClient.getIndividual(icp);
+    }
+
+    @Override
+    public IndividualAndContactDto getIndividualAndContactInformation(String icp) {
+        IndividualDto individualDto = profileServiceFeignClient.getIndividual(icp);
+        return individualAndContactMapper.toDto(individualDto);
+    }
+
+    @Override
+    public IndividualAndRfPassportDto getIndividualAndRfPassportInformation(String icp) {
+        IndividualDto individualDto = profileServiceFeignClient.getIndividual(icp);
+        return individualAndRfPassportMapper.toDto(individualDto);
+    }
 }
