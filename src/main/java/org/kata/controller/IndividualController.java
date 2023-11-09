@@ -8,7 +8,6 @@ import org.kata.dto.IndividualAndContactDto;
 import org.kata.dto.IndividualAndRfPassportDto;
 import org.kata.dto.IndividualDto;
 import org.kata.dto.ShortIndividualDto;
-import org.kata.dto.Test2Dto;
 import org.kata.service.IndividualService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,36 +25,31 @@ public class IndividualController {
 
     private final IndividualService individualService;
 
-    @GetMapping("/getTest")
-    public ResponseEntity<Test2Dto> getTest() {
-        return new ResponseEntity<>(individualService.getTest(), HttpStatus.OK);
+    @Operation(summary = "Get minimum Information from entity Individual")
+    @GetMapping("/getShortIndividualInformation")
+    public ResponseEntity<ShortIndividualDto> getShort(
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
+        return new ResponseEntity<>(individualService.getShortIndividualInformation(icp), HttpStatus.OK);
     }
 
-//    @Operation(summary = "Get minimum Information from entity Individual")
-//    @GetMapping("/getShortIndividualInformation")
-//    public ResponseEntity<ShortIndividualDto> getShort(
-//            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-//        return new ResponseEntity<>(individualService.getShortIndividualInformation(icp), HttpStatus.OK);
-//    }
-//
-//    @Operation(summary = "Get ShortIndividualInformation and Contacts from entity Individual")
-//    @GetMapping("/getIndividualAndContactInformation")
-//    public ResponseEntity<IndividualAndContactDto> getIndividualAndContact(
-//            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-//        return new ResponseEntity<>(individualService.getIndividualAndContactInformation(icp), HttpStatus.OK);
-//    }
-//
-//    @Operation(summary = "Get ShortIndividualInformation and RF Passports from entity Individual")
-//    @GetMapping("/getIndividualAndRfPassportInformation")
-//    public ResponseEntity<IndividualAndRfPassportDto> getIndividualAndRfPassport(
-//            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-//        return new ResponseEntity<>(individualService.getIndividualAndRfPassportInformation(icp), HttpStatus.OK);
-//    }
-//
-//    @Operation(summary = "Get Individual by ICP")
-//    @GetMapping("/getFullIndividualInformation")
-//    public ResponseEntity<IndividualDto> getFull(
-//            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-//        return new ResponseEntity<>(individualService.getFullIndividualInformation(icp), HttpStatus.OK);
-//    }
+    @Operation(summary = "Get ShortIndividualInformation and Contacts from entity Individual")
+    @GetMapping("/getIndividualAndContactInformation")
+    public ResponseEntity<IndividualAndContactDto> getIndividualAndContact(
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
+        return new ResponseEntity<>(individualService.getIndividualAndContactInformation(icp), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get ShortIndividualInformation and RF Passports from entity Individual")
+    @GetMapping("/getIndividualAndRfPassportInformation")
+    public ResponseEntity<IndividualAndRfPassportDto> getIndividualAndRfPassport(
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
+        return new ResponseEntity<>(individualService.getIndividualAndRfPassportInformation(icp), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get Individual by ICP")
+    @GetMapping("/getFullIndividualInformation")
+    public ResponseEntity<IndividualDto> getFull(
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
+        return new ResponseEntity<>(individualService.getFullIndividualInformation(icp), HttpStatus.OK);
+    }
 }

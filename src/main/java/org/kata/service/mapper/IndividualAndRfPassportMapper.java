@@ -2,7 +2,6 @@ package org.kata.service.mapper;
 
 import org.kata.dto.IndividualAndRfPassportDto;
 import org.kata.dto.IndividualDto;
-import org.kata.dto.ShortIndividualDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
