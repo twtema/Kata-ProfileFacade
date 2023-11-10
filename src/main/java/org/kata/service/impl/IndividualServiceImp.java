@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class IndividualServiceImp implements IndividualService {
 
-    private final ProfileServiceFeignClient profileServiceFeignClient;
+   private final ProfileServiceFeignClient profileServiceFeignClient;
 
     private final ShortIndividualMapper shortIndividualMapper;
     private final IndividualAndContactMapper individualAndContactMapper;

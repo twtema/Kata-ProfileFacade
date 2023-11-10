@@ -17,7 +17,7 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <swagger-annotations.version>2.2.8</swagger-annotations.version>
         <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
-        <spring-cloud.version>2021.0.0</spring-cloud.version>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
         <junit.version>4.13</junit.version>
         <javafaker.version>0.18</javafaker.version>
         <mokito.version>5.6.0</mokito.version>

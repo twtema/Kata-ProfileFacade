@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Individual",
-        description = "This tool is a beautiful facade to get information about individual person in convenient formats")
+        description = "Получение информации о клиенте (Individual) в разных форматах")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("v1/individual")
@@ -25,28 +25,28 @@ public class IndividualController {
 
     private final IndividualService individualService;
 
-    @Operation(summary = "Get minimum Information from entity Individual")
+    @Operation(summary = "Короткий формат: ФИО и дата рождения")
     @GetMapping("/getShortIndividualInformation")
     public ResponseEntity<ShortIndividualDto> getShort(
             @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
         return new ResponseEntity<>(individualService.getShortIndividualInformation(icp), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get ShortIndividualInformation and Contacts from entity Individual")
+    @Operation(summary = "ФИО, дата рождения и контакты")
     @GetMapping("/getIndividualAndContactInformation")
     public ResponseEntity<IndividualAndContactDto> getIndividualAndContact(
             @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
         return new ResponseEntity<>(individualService.getIndividualAndContactInformation(icp), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get ShortIndividualInformation and RF Passports from entity Individual")
+    @Operation(summary = "ФИО, дата рождения и удостоверения личности")
     @GetMapping("/getIndividualAndRfPassportInformation")
     public ResponseEntity<IndividualAndRfPassportDto> getIndividualAndRfPassport(
             @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
         return new ResponseEntity<>(individualService.getIndividualAndRfPassportInformation(icp), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get Individual by ICP")
+    @Operation(summary = "Полная информация о клиенте, имеющаяся в объекте Individual")
     @GetMapping("/getFullIndividualInformation")
     public ResponseEntity<IndividualDto> getFull(
             @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {

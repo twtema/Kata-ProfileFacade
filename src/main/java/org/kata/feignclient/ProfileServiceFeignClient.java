@@ -5,11 +5,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-//todo url задать через настройки
-@FeignClient(name = "profileService", url = "http://localhost:8082")
+@FeignClient(name = "profileService", url = "${url-properties.profileServiceBaseUrl}")
 public interface ProfileServiceFeignClient {
 
     @GetMapping("v1/individual")
-    IndividualDto getIndividual(@RequestParam String icp);
+    IndividualDto getIndividual(@RequestParam(name = "icp") String icp);
 
 }
