@@ -2,7 +2,6 @@ package org.kata.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kata.config.UrlProperties;
-import org.kata.dto.DocumentDto;
 import org.kata.dto.WalletDto;
 import org.kata.exception.WalletNotFoundException;
 import org.kata.service.WalletService;
