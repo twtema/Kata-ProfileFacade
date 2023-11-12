@@ -18,5 +18,6 @@ public class UrlProperties {
     private String profileServiceGetContactMedium;
     private String profileServiceGetAvatar;
     private String profileServiceGetAddress;
+    private  String profileServiceGetWallets;
 
 }
