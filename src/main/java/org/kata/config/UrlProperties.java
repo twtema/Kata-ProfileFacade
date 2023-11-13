@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 public class UrlProperties {
 
+
     private String profileServiceBaseUrl;
     private String profileServiceGetIndividual;
     private String profileServiceGetAllDocuments;
