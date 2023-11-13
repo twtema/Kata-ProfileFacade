@@ -11,6 +11,7 @@ import org.kata.dto.DocumentDto;
 import org.kata.dto.enums.DocumentType;
 import org.kata.exception.DocumentsNotFoundException;
 import org.kata.service.DocumentService;
+import org.kata.service.MaskingService;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.List;
 @RequestMapping("v1/document")
 public class DocumentController {
     private final DocumentService documentService;
+    private final MaskingService maskingService;
 
     @Operation(summary = "Get actual documents")
     @ApiResponses(value = {
@@ -69,7 +71,8 @@ public class DocumentController {
     public ResponseEntity<DocumentDto> getDocument
             (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp,
              @Parameter(description = "Document type", required = true) @RequestParam DocumentType documentType) {
-        return new ResponseEntity<>(documentService.getDocument(icp, documentType), HttpStatus.OK);
+        DocumentDto document = documentService.getDocument(icp, documentType);
+        return new ResponseEntity<>(maskingService.maskPersonalDataGeneric(document), HttpStatus.OK);
     }
 
     /**
