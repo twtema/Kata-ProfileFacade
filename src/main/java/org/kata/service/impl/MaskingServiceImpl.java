@@ -33,7 +33,6 @@ public class MaskingServiceImpl implements MaskingService {
                     field.set(obj, maskedValue);
                 } catch (IllegalAccessException e) {
                     logger.error("Error accessing field: " + field.getName(), e);
-                    continue;
                 }
             }
         }
