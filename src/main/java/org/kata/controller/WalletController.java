@@ -18,12 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("v1/wallets")
 public class WalletController {
-  private  final WalletService walletService;
-
-
+    private final WalletService walletService;
 
     @Operation(summary = "Получить Wallet по icp",
-            description= "Возвращает DTO Wallet по ICP")
+            description = "Возвращает DTO Wallet по ICP")
     @GetMapping
     public ResponseEntity<List<WalletDto>> getWallet(String icp) {
         return new ResponseEntity<>(walletService.getWallets(icp), HttpStatus.OK);
