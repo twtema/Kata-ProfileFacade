@@ -5,7 +5,6 @@ import org.kata.config.UrlProperties;
 import org.kata.dto.AddressDto;
 import org.kata.exception.AddressNotFoundException;
 import org.kata.service.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
