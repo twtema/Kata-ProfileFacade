@@ -8,6 +8,7 @@ import org.kata.config.UrlProperties;
 import org.kata.dto.WalletDto;
 import org.kata.dto.enums.CurrencyType;
 import org.kata.exception.FileReaderException;
+import org.kata.exception.JsonReaderException;
 import org.kata.exception.WalletNotFoundException;
 import org.kata.service.WalletService;
 import org.springframework.core.ParameterizedTypeReference;
@@ -32,7 +33,7 @@ public class WalletServiceImpl implements WalletService {
 
     private final UrlProperties urlProperties;
     private final WebClient loaderWebClient;
-    private String FILENAME = "src/main/resources/CurrencyRate.json";
+    private final String FILENAME = "src/main/resources/CurrencyRate.json";
 
 
     public WalletServiceImpl(UrlProperties urlProperties) {
@@ -74,9 +75,8 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public BigDecimal getTotalBalance(String icp, CurrencyType currencyType) {
         final BigDecimal[] balance = {BigDecimal.ZERO};
-        getWallets(icp).forEach(walletDto -> {
-            balance[0] = balance[0].add(converterCurrency(walletDto, currencyType));
-        });
+        getWallets(icp).forEach(walletDto ->
+            balance[0] = balance[0].add(converterCurrency(walletDto, currencyType)));
         return balance[0];
     }
 
@@ -106,7 +106,7 @@ public class WalletServiceImpl implements WalletService {
      */
     private BigDecimal getBalanceWithRate(BigDecimal balance, CurrencyType currencyQuote, CurrencyType currencyOriginal) {
         return balance.multiply(getRate(currencyQuote))
-                .divide(getRate(currencyOriginal), 4);
+                .divide(getRate(currencyOriginal), RoundingMode.HALF_UP);
 
     }
 
@@ -120,13 +120,13 @@ public class WalletServiceImpl implements WalletService {
     private BigDecimal getRate(CurrencyType currencyType) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            Map<String, BigDecimal> currancyRate = mapper.readValue(fileReader(), HashMap.class);
+            HashMap<String, BigDecimal> currancyRate = mapper.readValue(fileReader(), HashMap.class);
 
             return new BigDecimal(String.valueOf(currancyRate.get(currencyType.name())));
 
         } catch (JsonProcessingException e) {
 
-            throw new RuntimeException("JsonProcessingException " + e);
+            throw new JsonReaderException("Json Reader Exception " + e);
         }
 
     }
