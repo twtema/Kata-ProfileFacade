@@ -32,7 +32,7 @@ public class WalletServiceImpl implements WalletService {
 
     private final UrlProperties urlProperties;
     private final WebClient loaderWebClient;
-    private  String FILENAME = "src/main/resources/CurrencyRate.json";
+    private String FILENAME = "src/main/resources/CurrencyRate.json";
 
 
     public WalletServiceImpl(UrlProperties urlProperties) {
@@ -40,6 +40,13 @@ public class WalletServiceImpl implements WalletService {
         this.loaderWebClient = WebClient.create(urlProperties.getProfileServiceBaseUrl());
     }
 
+    /**
+     * Метод для получения списка кошельков пользователя по его icp.
+     *
+     * @param icp идентификатор пользователя
+     * @return список кошельков пользователя
+     * @throws WalletNotFoundException если кошельки с указанным icp не найдены
+     */
     public List<WalletDto> getWallets(String icp) {
         return loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -57,6 +64,13 @@ public class WalletServiceImpl implements WalletService {
                 .block();
     }
 
+    /**
+     * Метод для получения общего баланса пользователя в указанной валюте.
+     *
+     * @param icp          идентификатор пользователя
+     * @param currencyType валюта, в которой необходимо получить общий баланс
+     * @return общий баланс пользователя в указанной валюте
+     */
     @Override
     public BigDecimal getTotalBalance(String icp, CurrencyType currencyType) {
         final BigDecimal[] balance = {BigDecimal.ZERO};
@@ -66,6 +80,13 @@ public class WalletServiceImpl implements WalletService {
         return balance[0];
     }
 
+    /**
+     * Метод для конвертации баланса кошелька из одной валюты в другую.
+     *
+     * @param walletDto        объект кошелька, который необходимо конвертировать
+     * @param currencyOriginal валюта, в которой указан оригинальный баланс кошелька
+     * @return сконвертированный баланс кошелька в указанную валюту
+     */
     private BigDecimal converterCurrency(WalletDto walletDto, CurrencyType currencyOriginal) {
         if (walletDto.getCurrencyType().equals(currencyOriginal)) {
             return walletDto.getBalance();
@@ -75,18 +96,33 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
+    /**
+     * Метод для получения баланса кошелька с учетом курса валют.
+     *
+     * @param balance          оригинальный баланс кошелька
+     * @param currencyQuote    валюта, в которой указан баланс кошелька
+     * @param currencyOriginal валюта, в которую необходимо сконвертировать баланс кошелька
+     * @return баланс кошелька в указанной валюте с учетом курса валют
+     */
     private BigDecimal getBalanceWithRate(BigDecimal balance, CurrencyType currencyQuote, CurrencyType currencyOriginal) {
-        return  balance.multiply(getRate(currencyQuote))
+        return balance.multiply(getRate(currencyQuote))
                 .divide(getRate(currencyOriginal), 4);
 
     }
 
-    private BigDecimal getRate(CurrencyType currencyType)  {
+    /**
+     * Метод для получения курса валюты из файла.
+     *
+     * @param currencyType валюта, курс которой необходимо получить
+     * @return курс указанной валюты
+     * @throws RuntimeException если произошла ошибка при обработке JSON-файла с курсами валют
+     */
+    private BigDecimal getRate(CurrencyType currencyType) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            Map <String, BigDecimal> currancyRate = mapper.readValue(fileReader(), HashMap.class);
+            Map<String, BigDecimal> currancyRate = mapper.readValue(fileReader(), HashMap.class);
 
-    return new BigDecimal(String.valueOf(currancyRate.get(currencyType.name())));
+            return new BigDecimal(String.valueOf(currancyRate.get(currencyType.name())));
 
         } catch (JsonProcessingException e) {
 
@@ -95,11 +131,17 @@ public class WalletServiceImpl implements WalletService {
 
     }
 
-    private String fileReader()  {
+    /**
+     * Метод для чтения файла с курсами валют.
+     *
+     * @return содержимое файла с курсами валют
+     * @throws FileReaderException если произошла ошибка при чтении файла с курсами валют
+     */
+    private String fileReader() {
         try (Stream<String> stream = Files.lines(Paths.get(FILENAME))) {
             return stream.collect(Collectors.joining("\r\n"));
         } catch (IOException e) {
-            throw new FileReaderException("File " + FILENAME + " Reader Exception") ;
+            throw new FileReaderException("File " + FILENAME + " Reader Exception");
         }
     }
 }
