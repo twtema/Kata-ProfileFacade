@@ -20,4 +20,6 @@ public class UrlProperties {
     private String profileServiceGetAddress;
     private  String profileServiceGetWallets;
 
+    private String CbrBaseUrl;
+
 }
