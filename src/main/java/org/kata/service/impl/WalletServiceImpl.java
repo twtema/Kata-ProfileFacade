@@ -33,7 +33,7 @@ public class WalletServiceImpl implements WalletService {
 
     private final UrlProperties urlProperties;
     private final WebClient loaderWebClient;
-    private final String FILENAME = "src/main/resources/CurrencyRate.json";
+    private static final String FILENAME = "src/main/resources/CurrencyRate.json";
 
 
     public WalletServiceImpl(UrlProperties urlProperties) {
