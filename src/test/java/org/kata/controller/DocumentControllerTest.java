@@ -13,6 +13,7 @@ import org.kata.dto.DocumentDto;
 import org.kata.dto.enums.DocumentType;
 import org.kata.exception.DocumentsNotFoundException;
 import org.kata.service.impl.DocumentServiceImpl;
+import org.kata.service.impl.MaskingServiceImpl;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class DocumentControllerTest {
         urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
 
-        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
+        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties), new MaskingServiceImpl());
         ResponseEntity<List<DocumentDto>> response = documentController.getActualDocuments("203-29-3983");
         List<DocumentDto> documents = response.getBody();
 
@@ -55,7 +56,7 @@ public class DocumentControllerTest {
         urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
         urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
-        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
+        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties), new MaskingServiceImpl());
 
         log.info("Проверка на вызов ошибки DocumentsNotFoundException");
         Assert.assertThrows(DocumentsNotFoundException.class, () -> {
@@ -76,7 +77,7 @@ public class DocumentControllerTest {
         urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
         urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
-        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
+        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties), new MaskingServiceImpl());
 
         log.info("Проверка на то что документ не равен null");
 
@@ -96,7 +97,7 @@ public class DocumentControllerTest {
         urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
         urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
-        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
+        DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties), new MaskingServiceImpl());
 
 
         log.info("Проверка на то что документ не равен null");
