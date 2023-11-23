@@ -11,7 +11,7 @@ import org.kata.dto.DocumentDto;
 import org.kata.dto.enums.DocumentType;
 import org.kata.exception.DocumentsNotFoundException;
 import org.kata.service.DocumentService;
-import org.kata.service.impl.MaskingServiceImpl;
+import org.kata.service.MaskingService;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("v1/document")
 public class DocumentController {
     private final DocumentService documentService;
-    private final MaskingServiceImpl maskingService;
+    private final MaskingService maskingService;
 
     @Operation(summary = "Get actual documents")
     @ApiResponses(value = {

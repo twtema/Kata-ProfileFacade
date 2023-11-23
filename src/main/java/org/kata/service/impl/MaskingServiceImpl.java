@@ -1,13 +1,14 @@
 package org.kata.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.kata.annotations.MaskedField;
+import org.kata.exception.MaskingException;
 import org.kata.service.MaskingService;
 
 import java.lang.reflect.Field;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class MaskingServiceImpl implements MaskingService {
-    private static final Logger logger = LoggerFactory.getLogger(MaskingServiceImpl.class);
     @Override
     public <T> T maskPersonalDataGeneric(T obj) {
         if (obj == null) {
@@ -17,26 +18,42 @@ public class MaskingServiceImpl implements MaskingService {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
-            Object value;
-            try {
-                value = field.get(obj);
-            } catch (IllegalAccessException e) {
-                logger.error("Error accessing field: " + field.getName(), e);
-                continue;
-            }
-
-            if (value instanceof String && ((String) value).length() > 4) {
+            if (field.isAnnotationPresent(MaskedField.class)) {
                 try {
-                    String firstTwoChars = ((String) value).substring(0, 2);
-                    String lastTwoChars = ((String) value).substring(((String) value).length() - 2);
-                    String maskedValue = firstTwoChars + "****" + lastTwoChars;
-                    field.set(obj, maskedValue);
+                    Object value = field.get(obj);
+                    if (value instanceof String originalValue) {
+                        String maskedValue = maskString(originalValue);
+                        field.set(obj, maskedValue);
+                    }
                 } catch (IllegalAccessException e) {
-                    logger.error("Error accessing field: " + field.getName(), e);
+                    log.error("Error accessing field: " + field.getName(), e);
+                    try {
+                        throw new MaskingException("Failed to mask data");
+                    } catch (MaskingException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         }
-
         return obj;
+    }
+    public String maskString(String orginalValue) {
+        if (orginalValue.length() >= 4) {
+            return maskLongString(orginalValue);
+        } else if (orginalValue.length() == 3) {
+            return maskShortString(orginalValue);
+        }
+        return orginalValue;
+    }
+    private String maskLongString(String originalValue) {
+        String firstTwoChars = originalValue.substring(0, 2);
+        String lastTwoChars = originalValue.substring(originalValue.length() - 2);
+        return firstTwoChars + "****" + lastTwoChars;
+    }
+
+    private String maskShortString(String originalValue) {
+        String firstChar = originalValue.substring(0, 1);
+        String lastChar = originalValue.substring(originalValue.length() - 1);
+        return firstChar + "**" + lastChar;
     }
 }
