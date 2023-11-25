@@ -4,9 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.kata.annotations.MaskedField;
 import org.kata.exception.MaskingException;
 import org.kata.service.MaskingService;
-
+import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 
+@Service
 @Slf4j
 public class MaskingServiceImpl implements MaskingService {
     @Override
@@ -17,43 +18,34 @@ public class MaskingServiceImpl implements MaskingService {
 
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
-            field.setAccessible(true);
-            if (field.isAnnotationPresent(MaskedField.class)) {
+            if (field.isAnnotationPresent(MaskedField.class) && field.getType().equals(String.class)) {
+                field.setAccessible(true);
                 try {
-                    Object value = field.get(obj);
-                    if (value instanceof String originalValue) {
-                        String maskedValue = maskString(originalValue);
-                        field.set(obj, maskedValue);
+                    String originalValue = (String) field.get(obj);
+                    if (originalValue != null) {
+                        field.set(obj, maskString(originalValue));
+                    } else {
+                        log.warn("Field '{}' is null and cannot be masked.", field.getName());
                     }
-                } catch (IllegalAccessException e) {
+                    } catch (IllegalAccessException e) {
                     log.error("Error accessing field: " + field.getName(), e);
-                    try {
-                        throw new MaskingException("Failed to mask data");
-                    } catch (MaskingException ex) {
-                        throw new RuntimeException(ex);
-                    }
+                    throw new MaskingException("Failed to mask data");
                 }
             }
         }
         return obj;
     }
-    public String maskString(String orginalValue) {
-        if (orginalValue.length() >= 4) {
-            return maskLongString(orginalValue);
-        } else if (orginalValue.length() == 3) {
-            return maskShortString(orginalValue);
+    private String maskString(String originalValue) {
+        if (originalValue == null || originalValue.isEmpty()) {
+            return "Received empty string";
         }
-        return orginalValue;
-    }
-    private String maskLongString(String originalValue) {
-        String firstTwoChars = originalValue.substring(0, 2);
-        String lastTwoChars = originalValue.substring(originalValue.length() - 2);
-        return firstTwoChars + "****" + lastTwoChars;
-    }
-
-    private String maskShortString(String originalValue) {
-        String firstChar = originalValue.substring(0, 1);
-        String lastChar = originalValue.substring(originalValue.length() - 1);
-        return firstChar + "**" + lastChar;
+        int length = originalValue.length();
+        if (length > 4) {
+            return originalValue.substring(0, 2) + "****" + originalValue.substring(length - 2);
+        } else if (length == 3 || length == 2) {
+            return originalValue.charAt(0) + "****" + originalValue.charAt(1);
+        } else {
+            return originalValue;
+        }
     }
 }
