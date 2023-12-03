@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.kata.dto.DocumentDto;
 import org.kata.dto.enums.DocumentType;
 import org.kata.exception.DocumentsNotFoundException;
 import org.kata.service.DocumentService;
+import org.kata.service.MaskingService;
+import org.kata.service.impl.MaskingServiceImpl;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,14 @@ import java.util.List;
 
 @Tag(name = "Documents", description = "This class is designed to work with Individual documents")
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("v1/document")
 public class DocumentController {
     private final DocumentService documentService;
+    private final MaskingService maskingService;
+    public DocumentController (DocumentService documentService) {
+        this.documentService = documentService;
+        maskingService = new MaskingServiceImpl();
+    }
 
     @Operation(summary = "Get actual documents")
     @ApiResponses(value = {
@@ -69,7 +74,8 @@ public class DocumentController {
     public ResponseEntity<DocumentDto> getDocument
             (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp,
              @Parameter(description = "Document type", required = true) @RequestParam DocumentType documentType) {
-        return new ResponseEntity<>(documentService.getDocument(icp, documentType), HttpStatus.OK);
+        DocumentDto document = documentService.getDocument(icp, documentType);
+        return new ResponseEntity<>(maskingService.maskPersonalDataGeneric(document), HttpStatus.OK);
     }
 
     /**

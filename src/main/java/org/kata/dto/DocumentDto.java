@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.kata.annotations.MaskedField;
 import org.kata.dto.enums.DocumentType;
 
 import java.util.Date;
@@ -17,8 +18,10 @@ public class DocumentDto {
 
     private DocumentType documentType;
 
+    @MaskedField
     private String documentNumber;
 
+    @MaskedField
     private String documentSerial;
 
     private Date issueDate;
