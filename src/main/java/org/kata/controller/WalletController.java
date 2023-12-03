@@ -42,4 +42,8 @@ public class WalletController {
         return new ResponseEntity<>(walletService.getTotalBalance(icp, currencyType), HttpStatus.OK);
     }
 
+    public ResponseEntity<List<WalletDto>> getWallet(String icp) {
+        return new ResponseEntity<>(walletService.getWallets(icp), HttpStatus.OK);
+    }
+
 }

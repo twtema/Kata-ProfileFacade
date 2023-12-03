@@ -21,8 +21,6 @@ import java.util.List;
 @Setter
 @Slf4j
 public class DocumentControllerTest {
-
-
     @Test
     public void getActualDocumentsTest() {
         final UrlProperties urlProperties = new UrlProperties();

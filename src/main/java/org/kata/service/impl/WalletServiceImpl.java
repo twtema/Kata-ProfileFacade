@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -76,7 +77,7 @@ public class WalletServiceImpl implements WalletService {
     public BigDecimal getTotalBalance(String icp, CurrencyType currencyType) {
         final BigDecimal[] balance = {BigDecimal.ZERO};
         getWallets(icp).forEach(walletDto ->
-            balance[0] = balance[0].add(converterCurrency(walletDto, currencyType)));
+                balance[0] = balance[0].add(converterCurrency(walletDto, currencyType)));
         return balance[0];
     }
 
@@ -104,7 +105,8 @@ public class WalletServiceImpl implements WalletService {
      * @param currencyOriginal валюта, в которую необходимо сконвертировать баланс кошелька
      * @return баланс кошелька в указанной валюте с учетом курса валют
      */
-    private BigDecimal getBalanceWithRate(BigDecimal balance, CurrencyType currencyQuote, CurrencyType currencyOriginal) {
+    private BigDecimal getBalanceWithRate(BigDecimal balance, CurrencyType currencyQuote, CurrencyType
+            currencyOriginal) {
         return balance.multiply(getRate(currencyQuote))
                 .divide(getRate(currencyOriginal), RoundingMode.HALF_UP);
 
