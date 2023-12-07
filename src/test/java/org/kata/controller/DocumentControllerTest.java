@@ -24,12 +24,12 @@ public class DocumentControllerTest {
     @Test
     public void getActualDocumentsTest() {
         final UrlProperties urlProperties = new UrlProperties();
-        urlProperties.setProfileServiceBaseUrl("http://localhost:8081/");
+        urlProperties.setProfileServiceBaseUrl("http://localhost:8082/");
         urlProperties.setProfileServiceGetAllDocuments("v1/document/getAll");
 
 
         DocumentController documentController = new DocumentController(new DocumentServiceImpl(urlProperties));
-        ResponseEntity<List<DocumentDto>> response = documentController.getActualDocuments("203-29-3983");
+        ResponseEntity<List<DocumentDto>> response = documentController.getActualDocuments("1234567890");
         List<DocumentDto> documents = response.getBody();
 
         log.info("Проверка на то что документ не равен null");
@@ -37,7 +37,7 @@ public class DocumentControllerTest {
 
         log.info("Проверка на то что актуальный документ не равен неактуальному документу");
         Assert.assertNotEquals(documents.stream().findFirst().orElse(null)
-                , documentController.getArchiveDocuments("203-29-3983").getBody()
+                , documentController.getArchiveDocuments("1234567890").getBody()
                         .stream().findFirst().orElse(null));
 
         log.info("Проверка на вызов ошибки DocumentsNotFoundException");
