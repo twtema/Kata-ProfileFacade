@@ -15,7 +15,7 @@ public class DocumentServiceImplTest {
     public void getAllDocumentsTest() {
 
 
-        Assert.assertNotNull(documentService.getAllDocuments("203-29-3983"));
+        Assert.assertNotNull(documentService.getAllDocuments("1234567890"));
 
     }
 
