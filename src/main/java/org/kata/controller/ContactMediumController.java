@@ -25,27 +25,48 @@ public class ContactMediumController {
 
     private final ContactMediumService contactMediumService;
 
-    @GetMapping("/getActualNumberPhone")
-    @Operation(summary = "Get the actual phone number")
+    @GetMapping("/getActualPersonalNumberPhone")
+    @Operation(summary = "Get the actual personal phone number")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully received"),
             @ApiResponse(responseCode = "400", description = "Not found - The actual number was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-
-    public ResponseEntity<String> getActualNumberPhone(@RequestParam String icp) {
-        return new ResponseEntity <>(contactMediumService.getActualNumberPhone(icp), HttpStatus.OK);
+    public ResponseEntity<String> getActualPersonalNumberPhone(@RequestParam String icp) {
+        return new ResponseEntity <>(contactMediumService.getActualPersonalNumberPhone(icp), HttpStatus.OK);
     }
 
-    @GetMapping("/getActualEmail")
-    @Operation(summary = "Get the actual email")
+    @GetMapping("/getActualPersonalEmail")
+    @Operation(summary = "Get the actual personal email")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully received"),
             @ApiResponse(responseCode = "400", description = "Not found - The actual email was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<String> getActualEmail(@RequestParam String icp) {
-        return new ResponseEntity<>(contactMediumService.getActualEmail(icp),HttpStatus.OK);
+    public ResponseEntity<String> getActualPersonalEmail(@RequestParam String icp) {
+        return new ResponseEntity<>(contactMediumService.getActualPersonalEmail(icp),HttpStatus.OK);
+    }
+
+    @GetMapping("/getActualBusinessNumberPhone")
+    @Operation(summary = "Get the actual business phone number")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successfully received"),
+            @ApiResponse(responseCode = "400", description = "Not found - The actual business phone number was not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+    })
+    public ResponseEntity<String> getActualBusinessNumberPhone(@RequestParam String icp) {
+        return new ResponseEntity <>(contactMediumService.getActualBusinesslNumberPhone(icp), HttpStatus.OK);
+    }
+
+    @GetMapping("/getActualBusinessEmail")
+    @Operation(summary = "Get the actual business email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successfully received"),
+            @ApiResponse(responseCode = "400", description = "Not found - The actual business email was not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+    })
+    public ResponseEntity<String> getActualBusinessEmail(@RequestParam String icp) {
+        return new ResponseEntity<>(contactMediumService.getActualBusinessEmail(icp),HttpStatus.OK);
     }
 
     @GetMapping("/getAllNumberPhone")
