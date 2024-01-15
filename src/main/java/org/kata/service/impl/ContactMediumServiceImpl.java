@@ -3,7 +3,6 @@ package org.kata.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.kata.config.UrlProperties;
 import org.kata.dto.ContactMediumDto;
-import org.kata.dto.enums.ContactMediumType;
 import org.kata.exception.ContactMediumNotFoundException;
 import org.kata.service.ContactMediumService;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,69 +27,109 @@ public class ContactMediumServiceImpl implements ContactMediumService {
 
     @Override
     public List<String> getAllEmail(String icp) {
-        List<String> emails = new ArrayList<>();
-        List<ContactMediumDto> contactMediumAllEmail = loaderWebClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(urlProperties.getProfileServiceBaseUrl())
-                        .queryParam("icp", icp)
-                        .build())
-                .retrieve()
-                .onStatus(HttpStatus::isError, response ->
-                        Mono.error(new ContactMediumNotFoundException(
-                                "Actual Address with icp " + icp + " not found")
-                        )
-                )
-                .bodyToMono(new ParameterizedTypeReference<List<ContactMediumDto>>() {
-                })
-                .block();
-        assert contactMediumAllEmail != null;
-        for (ContactMediumDto email : contactMediumAllEmail) {
-            if (email.getType() == ContactMediumType.EMAIL) {
-                emails.add(email.getValue());
-            }
-        }
-        return emails;
+        var type = "EMAIL";
+        return getActualContactMediumsByType(icp, type);
     }
 
     @Override
-    public String getActualEmail(String icp) {
-        List<String> emails = getAllEmail(icp);
-        return emails.stream().findFirst().orElseThrow(() ->
-                new ContactMediumNotFoundException("No actual email found for icp: " + icp));
+    public String getActualPersonalEmail(String icp) {
+        var type = "EMAIL";
+        var usage = "PERSONAL";
+        return getActualContactMediumByTypeAndUsage(icp, type, usage);
     }
-
 
     @Override
     public List<String> getAllNumberPhone(String icp) {
-        List<String> allPhoneNumbers = new ArrayList<>();
-        List<ContactMediumDto> contactMediumAllPhone = loaderWebClient.get()
+        var type = "PHONE";
+        return getActualContactMediumsByType(icp, type);
+    }
+
+    @Override
+    public String getActualPersonalNumberPhone(String icp) {
+        var type = "PHONE";
+        var usage = "PERSONAL";
+        return getActualContactMediumByTypeAndUsage(icp, type, usage);
+    }
+
+    @Override
+    public String getActualBusinessEmail(String icp) {
+        var type = "EMAIL";
+        var usage = "BUSINESS";
+        return getActualContactMediumByTypeAndUsage(icp, type, usage);
+    }
+
+    @Override
+    public String getActualBusinesslNumberPhone(String icp) {
+        var type = "PHONE";
+        var usage = "BUSINESS";
+        return getActualContactMediumByTypeAndUsage(icp, type, usage);
+    }
+
+    private List<String> getActualContactMediumsByType(String icp, String type) {
+        List<ContactMediumDto> contactMediums = loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(urlProperties.getProfileServiceBaseUrl())
-                        .queryParam("icp", icp)
+                        .path(urlProperties.getProfileServiceGetContactMedium())
+                        .queryParam("id", icp)
+                        .queryParam("type", type)
                         .build())
                 .retrieve()
                 .onStatus(HttpStatus::isError, response ->
                         Mono.error(new ContactMediumNotFoundException(
-                                "All Address with icp " + icp + " not found")
+                                "ContactMedium with icp " + icp + " not found")
                         )
                 )
                 .bodyToMono(new ParameterizedTypeReference<List<ContactMediumDto>>() {
                 })
                 .block();
-        assert contactMediumAllPhone != null;
-        for (ContactMediumDto allNumber : contactMediumAllPhone) {
-            if (allNumber.getType() == ContactMediumType.PHONE) {
-                allPhoneNumbers.add(allNumber.getValue());
-            }
-        }
-        return allPhoneNumbers;
+        assert contactMediums != null;
+        return contactMediums.stream()
+                .map(ContactMediumDto::getValue)
+                .toList();
     }
 
-    @Override
-    public String getActualNumberPhone(String icp) {
-        List<String> phone = getAllEmail(icp);
-        return phone.stream().findFirst().orElseThrow(() ->
-                new ContactMediumNotFoundException("No actual phone found for icp: " + icp));
+    private List<String> getActualContactMediumsByUsage(String icp, String usage) {
+        List<ContactMediumDto> contactMediums = loaderWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(urlProperties.getProfileServiceGetContactMedium())
+                        .queryParam("id", icp)
+                        .queryParam("usage", usage)
+                        .build())
+                .retrieve()
+                .onStatus(HttpStatus::isError, response ->
+                        Mono.error(new ContactMediumNotFoundException(
+                                "ContactMedium with icp " + icp + " not found")
+                        )
+                )
+                .bodyToMono(new ParameterizedTypeReference<List<ContactMediumDto>>() {
+                })
+                .block();
+        assert contactMediums != null;
+        return contactMediums.stream()
+                .map(ContactMediumDto::getValue)
+                .toList();
+    }
+
+    private String getActualContactMediumByTypeAndUsage(String icp, String type, String usage) {
+        List<ContactMediumDto> contactMediums = loaderWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(urlProperties.getProfileServiceGetContactMedium())
+                        .queryParam("id", icp)
+                        .queryParam("type", type)
+                        .queryParam("usage", usage)
+                        .build())
+                .retrieve()
+                .onStatus(HttpStatus::isError, response ->
+                        Mono.error(new ContactMediumNotFoundException(
+                                "ContactMedium with icp " + icp + " not found")
+                        )
+                )
+                .bodyToMono(new ParameterizedTypeReference<List<ContactMediumDto>>() {
+                })
+                .block();
+        assert contactMediums != null;
+        return contactMediums.stream()
+                .map(ContactMediumDto::getValue)
+                .findFirst()
+                .orElseThrow(() -> new ContactMediumNotFoundException("No contact mediums with this parameters found for icp: " + icp));
     }
 }
-

@@ -1,8 +1,5 @@
 package org.kata.service;
 
-import org.kata.dto.ContactMediumDto;
-import org.kata.dto.enums.ContactMediumType;
-
 import java.util.List;
 
 public interface ContactMediumService {
@@ -10,7 +7,11 @@ public interface ContactMediumService {
 
     List<String> getAllNumberPhone(String icp);
 
-    String getActualEmail(String icp);
+    String getActualPersonalEmail(String icp);
 
-    String getActualNumberPhone(String icp);
+    String getActualPersonalNumberPhone(String icp);
+
+    String getActualBusinessEmail(String icp);
+
+    String getActualBusinesslNumberPhone(String icp);
 }
