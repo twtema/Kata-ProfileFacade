@@ -13,5 +13,5 @@ public interface ContactMediumService {
 
     String getActualBusinessEmail(String icp);
 
-    String getActualBusinesslNumberPhone(String icp);
+    String getActualBusinessNumberPhone(String icp);
 }

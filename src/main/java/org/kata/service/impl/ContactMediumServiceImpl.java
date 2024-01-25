@@ -17,6 +17,11 @@ import java.util.List;
 @Slf4j
 public class ContactMediumServiceImpl implements ContactMediumService {
 
+    private static final String EMAIL = "EMAIL";
+    private static final String PHONE = "PHONE";
+    private static final String PERSONAL = "PERSONAL";
+    private static final String BUSINESS = "BUSINESS";
+
     private final UrlProperties urlProperties;
     private final WebClient loaderWebClient;
 
@@ -27,72 +32,40 @@ public class ContactMediumServiceImpl implements ContactMediumService {
 
     @Override
     public List<String> getAllEmail(String icp) {
-        var type = "EMAIL";
-        return getActualContactMediumsByType(icp, type);
-    }
-
-    @Override
-    public String getActualPersonalEmail(String icp) {
-        var type = "EMAIL";
-        var usage = "PERSONAL";
-        return getActualContactMediumByTypeAndUsage(icp, type, usage);
+        return getActualContactMediumsByType(icp, EMAIL);
     }
 
     @Override
     public List<String> getAllNumberPhone(String icp) {
-        var type = "PHONE";
-        return getActualContactMediumsByType(icp, type);
+        return getActualContactMediumsByType(icp, PHONE);
+    }
+
+    @Override
+    public String getActualPersonalEmail(String icp) {
+        return getActualContactMediumByTypeAndUsage(icp, EMAIL, PERSONAL);
     }
 
     @Override
     public String getActualPersonalNumberPhone(String icp) {
-        var type = "PHONE";
-        var usage = "PERSONAL";
-        return getActualContactMediumByTypeAndUsage(icp, type, usage);
+        return getActualContactMediumByTypeAndUsage(icp, PHONE, PERSONAL);
     }
 
     @Override
     public String getActualBusinessEmail(String icp) {
-        var type = "EMAIL";
-        var usage = "BUSINESS";
-        return getActualContactMediumByTypeAndUsage(icp, type, usage);
+        return getActualContactMediumByTypeAndUsage(icp, EMAIL, BUSINESS);
     }
 
     @Override
-    public String getActualBusinesslNumberPhone(String icp) {
-        var type = "PHONE";
-        var usage = "BUSINESS";
-        return getActualContactMediumByTypeAndUsage(icp, type, usage);
+    public String getActualBusinessNumberPhone(String icp) {
+        return getActualContactMediumByTypeAndUsage(icp, PHONE, BUSINESS);
     }
 
     private List<String> getActualContactMediumsByType(String icp, String type) {
         List<ContactMediumDto> contactMediums = loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileServiceGetContactMedium())
-                        .queryParam("id", icp)
+                        .queryParam("icp", icp)
                         .queryParam("type", type)
-                        .build())
-                .retrieve()
-                .onStatus(HttpStatus::isError, response ->
-                        Mono.error(new ContactMediumNotFoundException(
-                                "ContactMedium with icp " + icp + " not found")
-                        )
-                )
-                .bodyToMono(new ParameterizedTypeReference<List<ContactMediumDto>>() {
-                })
-                .block();
-        assert contactMediums != null;
-        return contactMediums.stream()
-                .map(ContactMediumDto::getValue)
-                .toList();
-    }
-
-    private List<String> getActualContactMediumsByUsage(String icp, String usage) {
-        List<ContactMediumDto> contactMediums = loaderWebClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(urlProperties.getProfileServiceGetContactMedium())
-                        .queryParam("id", icp)
-                        .queryParam("usage", usage)
                         .build())
                 .retrieve()
                 .onStatus(HttpStatus::isError, response ->
@@ -113,7 +86,7 @@ public class ContactMediumServiceImpl implements ContactMediumService {
         List<ContactMediumDto> contactMediums = loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileServiceGetContactMedium())
-                        .queryParam("id", icp)
+                        .queryParam("icp", icp)
                         .queryParam("type", type)
                         .queryParam("usage", usage)
                         .build())

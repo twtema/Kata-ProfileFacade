@@ -53,7 +53,7 @@ public class ContactMediumController {
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
     public ResponseEntity<String> getActualBusinessNumberPhone(@RequestParam String icp) {
-        return new ResponseEntity <>(contactMediumService.getActualBusinesslNumberPhone(icp), HttpStatus.OK);
+        return new ResponseEntity<>(contactMediumService.getActualBusinessNumberPhone(icp), HttpStatus.OK);
     }
 
     @GetMapping("/getActualBusinessEmail")
@@ -74,7 +74,7 @@ public class ContactMediumController {
             @ApiResponse(responseCode = "400", description = "Not found - The all number phone was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<List<String>> getAllNumberPhone(String icp) {
+    public ResponseEntity<List<String>> getAllNumberPhone(@RequestParam String icp) {
         return new ResponseEntity<>(contactMediumService.getAllNumberPhone(icp),HttpStatus.OK);
     }
 
@@ -85,7 +85,7 @@ public class ContactMediumController {
             @ApiResponse(responseCode = "400", description = "Not found - The all number phone was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<List<String>> getAllEmail(String icp) {
+    public ResponseEntity<List<String>> getAllEmail(@RequestParam String icp) {
         return new ResponseEntity<>(contactMediumService.getAllEmail(icp),HttpStatus.OK);
     }
 }
