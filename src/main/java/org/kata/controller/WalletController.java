@@ -20,8 +20,9 @@ import java.util.List;
 @Tag(name = "Wallet", description = "This class is designed to work with Individual wallets")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/wallets")
+@RequestMapping("v1/wallet")
 public class WalletController {
+
     private final WalletService walletService;
 
     @Operation(summary = "Получить Wallet по icp",
@@ -32,7 +33,7 @@ public class WalletController {
         return new ResponseEntity<>(walletService.getWallets(icp), HttpStatus.OK);
     }
 
-    @Operation(summary = "Получить сумму всех кошельков заданной валюте(по умолчанию рубли)",
+    @Operation(summary = "Получить сумму балансов всех кошельков в заданной валюте(по умолчанию рубли)",
             description = "Возвращает String Total balance")
     @GetMapping("/totalbalance")
     public ResponseEntity <BigDecimal> getTotalBalance
@@ -41,7 +42,4 @@ public class WalletController {
              @RequestParam (name = "currencyType", defaultValue = "RUB") CurrencyType currencyType) {
         return new ResponseEntity<>(walletService.getTotalBalance(icp, currencyType), HttpStatus.OK);
     }
-
-
-
 }
