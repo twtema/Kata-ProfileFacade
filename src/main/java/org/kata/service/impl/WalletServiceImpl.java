@@ -18,7 +18,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -33,9 +36,10 @@ import java.util.List;
 public class WalletServiceImpl implements WalletService {
 
     private final UrlProperties urlProperties;
-    private final WebClient loaderWebClient;
-    private static final String FILENAME = "src/main/resources/CurrencyRate.json";
 
+    private final WebClient loaderWebClient;
+
+    private static final String CURRENCY_RATES = "CurrencyRate.json";
 
     public WalletServiceImpl(UrlProperties urlProperties) {
         this.urlProperties = urlProperties;
@@ -53,7 +57,7 @@ public class WalletServiceImpl implements WalletService {
         return loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileServiceGetWallets())
-                        .queryParam("icp", icp)
+                        .queryParam("id", icp)
                         .build())
                 .retrieve()
                 .onStatus(HttpStatus::isError, response ->
@@ -109,7 +113,6 @@ public class WalletServiceImpl implements WalletService {
             currencyOriginal) {
         return balance.multiply(getRate(currencyQuote))
                 .divide(getRate(currencyOriginal), RoundingMode.HALF_UP);
-
     }
 
     /**
@@ -130,7 +133,6 @@ public class WalletServiceImpl implements WalletService {
 
             throw new JsonReaderException("Json Reader Exception " + e);
         }
-
     }
 
     /**
@@ -140,10 +142,13 @@ public class WalletServiceImpl implements WalletService {
      * @throws FileReaderException если произошла ошибка при чтении файла с курсами валют
      */
     private String fileReader() {
-        try (Stream<String> stream = Files.lines(Paths.get(FILENAME))) {
-            return stream.collect(Collectors.joining("\r\n"));
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(CURRENCY_RATES)) {
+            assert input != null;
+            return new BufferedReader(new InputStreamReader(input))
+                    .lines()
+                    .collect(Collectors.joining(System.lineSeparator()));
         } catch (IOException e) {
-            throw new FileReaderException("File " + FILENAME + " Reader Exception");
+            throw new FileReaderException("File Reader Exception " + e);
         }
     }
 }
