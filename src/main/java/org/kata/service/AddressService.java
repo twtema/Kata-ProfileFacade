@@ -5,9 +5,9 @@ import org.kata.dto.AddressDto;
 import java.util.List;
 
 public interface AddressService {
-    AddressDto getActualAddress(String icp);
+    AddressDto getActualAddress(String icp, String conversationId);
 
-    List<AddressDto> getAllAddresses(String icp);
+    List<AddressDto> getAllAddresses(String icp, String conversationId);
 
 }
 

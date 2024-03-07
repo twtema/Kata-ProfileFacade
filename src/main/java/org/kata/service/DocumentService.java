@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public interface DocumentService {
 
-    List<DocumentDto> getArchiveDocuments(String icp);
+    List<DocumentDto> getArchiveDocuments(String icp, String conversationId);
 
-    List<DocumentDto> getActualDocuments(String icp);
+    List<DocumentDto> getActualDocuments(String icp, String conversationId);
 
-    List<DocumentDto> getAllDocuments(String icp);
+    List<DocumentDto> getAllDocuments(String icp, String conversationId);
 
-    DocumentDto getDocument(String icp, DocumentType documentType);
+    DocumentDto getDocument(String icp, DocumentType documentType, String conversationId);
 
 }

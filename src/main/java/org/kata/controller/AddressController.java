@@ -22,7 +22,6 @@ public class AddressController {
 
     private final AddressService addressService;
 
-
     @GetMapping(value = "/getActualAddress",produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get the actual address")
     @ApiResponses(value = {
@@ -30,9 +29,11 @@ public class AddressController {
             @ApiResponse(responseCode = "400", description = "Not found - The actual address was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<AddressDto> getActualAddress(@RequestParam String icp) {
-        return new ResponseEntity<>(addressService.getActualAddress(icp), HttpStatus.OK);
-
+    public ResponseEntity<AddressDto> getActualAddress(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(addressService.getActualAddress(icp, conversationId), HttpStatus.OK);
     }
 
     @GetMapping("/getAllAddresses")
@@ -42,8 +43,11 @@ public class AddressController {
             @ApiResponse(responseCode = "400", description = "Not found - The all addresses was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<List<AddressDto>> getAllAddresses(@RequestParam String icp) {
-        return new ResponseEntity<>(addressService.getAllAddresses(icp), HttpStatus.OK);
+    public ResponseEntity<List<AddressDto>> getAllAddresses(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(addressService.getAllAddresses(icp, conversationId), HttpStatus.OK);
     }
 }
 

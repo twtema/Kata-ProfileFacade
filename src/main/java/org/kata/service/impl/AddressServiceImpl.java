@@ -26,7 +26,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressDto> getAllAddresses(String icp) {
+    public List<AddressDto> getAllAddresses(String icp, String conversationId) {
         return loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileServiceGetAddress())
@@ -44,7 +44,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressDto getActualAddress(String icp) {
-        return getAllAddresses(icp).stream().filter(AddressDto::isActual).findFirst().orElse(null);
+    public AddressDto getActualAddress(String icp, String conversationId) {
+        return getAllAddresses(icp, conversationId).stream().filter(AddressDto::isActual).findFirst().orElse(null);
     }
 }

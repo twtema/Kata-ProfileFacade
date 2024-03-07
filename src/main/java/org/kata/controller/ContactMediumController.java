@@ -10,10 +10,7 @@ import org.kata.service.ContactMediumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,8 +30,11 @@ public class ContactMediumController {
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
 
-    public ResponseEntity<String> getActualNumberPhone(@RequestParam String icp) {
-        return new ResponseEntity <>(contactMediumService.getActualNumberPhone(icp), HttpStatus.OK);
+    public ResponseEntity<String> getActualNumberPhone(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            @RequestParam String icp
+    ) {
+        return new ResponseEntity <>(contactMediumService.getActualNumberPhone(icp, conversationId), HttpStatus.OK);
     }
 
     @GetMapping("/getActualEmail")
@@ -44,8 +44,11 @@ public class ContactMediumController {
             @ApiResponse(responseCode = "400", description = "Not found - The actual email was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<String> getActualEmail(@RequestParam String icp) {
-        return new ResponseEntity<>(contactMediumService.getActualEmail(icp),HttpStatus.OK);
+    public ResponseEntity<String> getActualEmail(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(contactMediumService.getActualEmail(icp, conversationId),HttpStatus.OK);
     }
 
     @GetMapping("/getAllNumberPhone")
@@ -55,8 +58,11 @@ public class ContactMediumController {
             @ApiResponse(responseCode = "400", description = "Not found - The all number phone was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<List<String>> getAllNumberPhone(String icp) {
-        return new ResponseEntity<>(contactMediumService.getAllNumberPhone(icp),HttpStatus.OK);
+    public ResponseEntity<List<String>> getAllNumberPhone(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            String icp
+    ) {
+        return new ResponseEntity<>(contactMediumService.getAllNumberPhone(icp, conversationId),HttpStatus.OK);
     }
 
     @GetMapping("/getAllEmail")
@@ -66,7 +72,10 @@ public class ContactMediumController {
             @ApiResponse(responseCode = "400", description = "Not found - The all number phone was not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
     })
-    public ResponseEntity<List<String>> getAllEmail(String icp) {
-        return new ResponseEntity<>(contactMediumService.getAllEmail(icp),HttpStatus.OK);
+    public ResponseEntity<List<String>> getAllEmail(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            String icp
+    ) {
+        return new ResponseEntity<>(contactMediumService.getAllEmail(icp, conversationId),HttpStatus.OK);
     }
 }

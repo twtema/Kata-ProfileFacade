@@ -28,13 +28,14 @@ public class ContactMediumServiceImpl implements ContactMediumService {
     }
 
     @Override
-    public List<String> getAllEmail(String icp) {
+    public List<String> getAllEmail(String icp, String conversationId) {
         List<String> emails = new ArrayList<>();
         List<ContactMediumDto> contactMediumAllEmail = loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileServiceBaseUrl())
                         .queryParam("icp", icp)
                         .build())
+                .header("conversationId", conversationId)
                 .retrieve()
                 .onStatus(HttpStatus::isError, response ->
                         Mono.error(new ContactMediumNotFoundException(
@@ -54,15 +55,15 @@ public class ContactMediumServiceImpl implements ContactMediumService {
     }
 
     @Override
-    public String getActualEmail(String icp) {
-        List<String> emails = getAllEmail(icp);
+    public String getActualEmail(String icp, String conversationId) {
+        List<String> emails = getAllEmail(icp, conversationId);
         return emails.stream().findFirst().orElseThrow(() ->
                 new ContactMediumNotFoundException("No actual email found for icp: " + icp));
     }
 
 
     @Override
-    public List<String> getAllNumberPhone(String icp) {
+    public List<String> getAllNumberPhone(String icp, String conversationId) {
         List<String> allPhoneNumbers = new ArrayList<>();
         List<ContactMediumDto> contactMediumAllPhone = loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -88,8 +89,8 @@ public class ContactMediumServiceImpl implements ContactMediumService {
     }
 
     @Override
-    public String getActualNumberPhone(String icp) {
-        List<String> phone = getAllEmail(icp);
+    public String getActualNumberPhone(String icp, String conversationId) {
+        List<String> phone = getAllEmail(icp, conversationId);
         return phone.stream().findFirst().orElseThrow(() ->
                 new ContactMediumNotFoundException("No actual phone found for icp: " + icp));
     }
