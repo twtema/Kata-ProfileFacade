@@ -1,152 +1,157 @@
 package org.kata.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kata.dto.DocumentDto;
 import org.kata.dto.enums.DocumentType;
-import org.kata.exception.DocumentsNotFoundException;
-import org.kata.service.DocumentService;
 import org.kata.service.MaskingService;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.kata.service.impl.DocumentServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@WebMvcTest(DocumentController.class)
 public class DocumentControllerTest {
 
-    @Mock
-    private DocumentService documentService;
+    @MockBean
+    private DocumentServiceImpl documentService;
 
-    @Mock
+    @MockBean
     private MaskingService maskingService;
 
-    @InjectMocks
-    private DocumentController documentController;
+    @Autowired
+    MockMvc mockMvc;
 
-    private List<DocumentDto> documentList;
+    @Autowired
+    ObjectMapper objectMapper;
 
-    private DocumentDto document1;
-    private DocumentDto document2;
+    String conversationId;
+    String icp;
+    DocumentDto documentOne;
+    DocumentDto documentTwo;
+    DocumentDto maskedDocumentOne;
+    List<DocumentDto> documents;
 
     @Before
     public void setUp() {
-        document1 = DocumentDto.builder()
-                .documentType(DocumentType.RF_PASSPORT)
-                .actual(true)
-                .build();
 
-        document2 = DocumentDto.builder()
-                .documentType(DocumentType.INN)
-                .actual(true)
-                .build();
-
-        documentList = Arrays.asList(document1, document2);
-    }
-
-    @Test
-    public void shouldReturnActualDocuments_WhenActualDocumentsExist() {
-        when(documentService.getActualDocuments(anyString(), anyString())).thenReturn(documentList);
-
-        List<DocumentDto> actualDocuments = documentController.getActualDocuments("1234567890", "test-conversationId").getBody();
-
-        assertNotNull(actualDocuments);
-        assertEquals(2, actualDocuments.size());
-    }
-
-
-    @Test(expected = DocumentsNotFoundException.class)
-    public void shouldThrowDocumentsNotFoundException_WhenNoDocumentsExist() {
-        when(documentService.getActualDocuments(anyString(), anyString())).thenThrow(new DocumentsNotFoundException("Documents not found"));
-
-        documentController.getActualDocuments("1234567890", "test-conversationId");
-    }
-
-    @Test
-    public void shouldReturnArchiveDocuments_WhenArchiveDocumentsExist() {
-        when(documentService.getArchiveDocuments(anyString(), anyString())).thenReturn(documentList);
-
-        List<DocumentDto> archiveDocuments = documentController.getArchiveDocuments("1234567890", "test-conversationId").getBody();
-
-        assertNotNull(archiveDocuments);
-        assertEquals(2, archiveDocuments.size());
-    }
-
-    @Test(expected = DocumentsNotFoundException.class)
-    public void shouldThrowDocumentsNotFoundException_WhenNoArchiveDocumentsExist() {
-        when(documentService.getArchiveDocuments(anyString(), anyString())).thenThrow(new DocumentsNotFoundException("Documents not found"));
-
-        documentController.getArchiveDocuments("1234567890", "test-conversationId");
-    }
-
-    @Test
-    public void shouldReturnAllDocuments_WhenDocumentsExist() {
-        when(documentService.getAllDocuments(anyString(), anyString())).thenReturn(documentList);
-
-        List<DocumentDto> allDocuments = documentController.getAllDocuments("1234567890", "test-conversationId").getBody();
-
-        assertNotNull(allDocuments);
-        assertEquals(2, allDocuments.size());
-    }
-
-    @Test
-    public void shouldReturnDocument_WhenDocumentExists() {
-
-        DocumentDto expectedDocument = DocumentDto.builder()
+        conversationId = "conversationId";
+        icp = "1234567890";
+        documentOne = DocumentDto.builder()
                 .icp("1234567890")
                 .documentType(DocumentType.RF_PASSPORT)
+                .actual(true)
+                .documentNumber("1234567890")
+                .documentSerial("123")
                 .build();
-        when(documentService.getDocument(anyString(), any(), anyString())).thenReturn(expectedDocument);
+        documentTwo = DocumentDto.builder()
+                .icp("1234567890")
+                .documentType(DocumentType.RF_PASSPORT)
+                .actual(true)
+                .documentNumber("1234567890")
+                .documentSerial("123")
+                .build();
+        documents = List.of(documentOne, documentTwo);
 
-        DocumentDto actualDocument = documentController.getDocument("test-conversationId", "1234567890", DocumentType.RF_PASSPORT).getBody();
-
-        assertNotNull(actualDocument);
-        assertEquals(expectedDocument, actualDocument);
+        maskedDocumentOne = DocumentDto.builder()
+                .icp("1234567890")
+                .documentType(DocumentType.RF_PASSPORT)
+                .actual(true)
+                .documentNumber("12****90")
+                .documentSerial("1****3")
+                .build();
     }
 
-    @Test(expected = DocumentsNotFoundException.class)
-    public void shouldThrowDocumentsNotFoundException_WhenDocumentDoesNotExist() {
-        when(documentService.getDocument(anyString(), any(), anyString())).thenThrow(new DocumentsNotFoundException("Document not found"));
+    @Test
+    public void shouldReturnActualDocumentsWhenTheyExist() throws Exception {
+        when(documentService.getActualDocuments(anyString(), anyString())).thenReturn(documents);
+        mockMvc.perform(get("/v1/document/getActual")
+                        .header("conversationId", conversationId)
+                        .param("icp", icp))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].documentNumber").value(documentOne.getDocumentNumber()))
+                .andExpect(jsonPath("$[0].documentType").value(documentOne.getDocumentType().toString()))
+                .andExpect(jsonPath("$[0].actual").value(documentOne.isActual()))
+                .andExpect(jsonPath("$[1].documentNumber").value(documentTwo.getDocumentNumber()))
+                .andExpect(jsonPath("$[1].documentType").value(documentTwo.getDocumentType().toString()))
+                .andExpect(jsonPath("$[1].actual").value(documentTwo.isActual()));
 
-        documentController.getDocument("test-conversationId", "1234567890", DocumentType.RF_PASSPORT);
+        verify(documentService, times(1)).getActualDocuments(anyString(), anyString());
     }
 
-//    @Test
-//    public void getNotActualDocuments_ReturnsEmptyList_WhenNoDocumentsAreNotActual() {
-//        when(documentService.getActualDocuments(anyString(), anyString())).thenReturn(Collections.emptyList());
-//
-//        List<DocumentDto> actualDocuments = documentController.getActualDocuments("1234567890", "test-conversationId").getBody();
-//
-//        assertNotNull(actualDocuments);
-//        assertTrue(actualDocuments.isEmpty());
-//    }
-//
-//    @Test
-//    public void getNotActualDocuments_ReturnsCorrectDocuments_WhenDocumentsAreNotActual() {
-//        DocumentDto notActualDocument = DocumentDto.builder()
-//                .documentType(DocumentType.RF_PASSPORT)
-//                .actual(false)
-//                .build();
-//
-//        List<DocumentDto> notActualDocuments = Arrays.asList(notActualDocument);
-//
-//        when(documentService.getActualDocuments(anyString(), anyString())).thenReturn(notActualDocuments);
-//
-//        List<DocumentDto> actualDocuments = documentController.getActualDocuments("1234567890", "test-conversationId").getBody();
-//
-//        assertNotNull(actualDocuments);
-//        assertEquals(1, actualDocuments.size());
-//        assertEquals(notActualDocument, actualDocuments.get(0));
-//    }
+    @Test
+    public void testGetActualDocumentsWhenNoDocumentsExist() throws Exception {
+        when(documentService.getActualDocuments(anyString(), anyString())).thenReturn(Collections.emptyList());
 
+        mockMvc.perform(get("/v1/document/getActual")
+                        .header("conversationId", conversationId)
+                        .param("icp", icp))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 
+    @Test
+    public void shouldReturnBadRequestWhenIcpIsMissing() throws Exception {
+        mockMvc.perform(get("/v1/document/getActual").header("conversationId", conversationId))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnMaskedDocumentWhenMaskingIsRequired() throws Exception {
+        when(documentService.getDocument(anyString(), any(), anyString())).thenReturn(documentOne);
+        when(maskingService.maskPersonalDataGeneric(any())).thenReturn(maskedDocumentOne);
+        mockMvc.perform(get("/v1/document/getDocument")
+                        .header("conversationId", conversationId)
+                        .param("icp", icp)
+                        .param("documentType", DocumentType.RF_PASSPORT.name()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.documentNumber").value(maskedDocumentOne.getDocumentNumber()))
+                .andExpect(jsonPath("$.documentType").value(maskedDocumentOne.getDocumentType().toString()))
+                .andExpect(jsonPath("$.actual").value(documentOne.isActual()));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenDocumentTypeIsMissing() throws Exception {
+        mockMvc.perform(get("/v1/document/getDocument")
+                        .header("conversationId", conversationId)
+                        .param("icp", icp))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnAllDocumentsWhenTheyExist() throws Exception {
+        when(documentService.getAllDocuments(anyString(), anyString())).thenReturn(documents);
+        mockMvc.perform(get("/v1/document/getAll")
+                        .header("conversationId", conversationId)
+                        .param("icp", icp))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].documentNumber").value(documentOne.getDocumentNumber()))
+                .andExpect(jsonPath("$[0].documentType").value(documentOne.getDocumentType().toString()))
+                .andExpect(jsonPath("$[0].actual").value(documentOne.isActual()))
+                .andExpect(jsonPath("$[1].documentNumber").value(documentTwo.getDocumentNumber()))
+                .andExpect(jsonPath("$[1].documentType").value(documentTwo.getDocumentType().toString()))
+                .andExpect(jsonPath("$[1].actual").value(documentTwo.isActual()));
+
+        verify(documentService, times(1)).getAllDocuments(anyString(), anyString());
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenIcpIsMissingForAllDocuments() throws Exception {
+        mockMvc.perform(get("/v1/document/getAll").header("conversationId", conversationId))
+                .andExpect(status().isBadRequest());
+    }
 }
