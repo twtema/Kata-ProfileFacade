@@ -49,7 +49,7 @@ public class WalletServiceImpl implements WalletService {
      * @return список кошельков пользователя
      * @throws WalletNotFoundException если кошельки с указанным icp не найдены
      */
-    public List<WalletDto> getWallets(String icp) {
+    public List<WalletDto> getWallets(String icp, String conversationId) {
         return loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileServiceGetWallets())
@@ -74,9 +74,9 @@ public class WalletServiceImpl implements WalletService {
      * @return общий баланс пользователя в указанной валюте
      */
     @Override
-    public BigDecimal getTotalBalance(String icp, CurrencyType currencyType) {
+    public BigDecimal getTotalBalance(String icp, CurrencyType currencyType, String conversationId) {
         final BigDecimal[] balance = {BigDecimal.ZERO};
-        getWallets(icp).forEach(walletDto ->
+        getWallets(icp, conversationId).forEach(walletDto ->
                 balance[0] = balance[0].add(converterCurrency(walletDto, currencyType)));
         return balance[0];
     }
@@ -123,11 +123,8 @@ public class WalletServiceImpl implements WalletService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             HashMap<String, BigDecimal> currancyRate = mapper.readValue(fileReader(), HashMap.class);
-
             return new BigDecimal(String.valueOf(currancyRate.get(currencyType.name())));
-
         } catch (JsonProcessingException e) {
-
             throw new JsonReaderException("Json Reader Exception " + e);
         }
 

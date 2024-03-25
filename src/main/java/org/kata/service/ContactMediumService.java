@@ -6,11 +6,11 @@ import org.kata.dto.enums.ContactMediumType;
 import java.util.List;
 
 public interface ContactMediumService {
-    List<String> getAllEmail(String icp);
+    List<String> getAllEmail(String icp, String conversationId);
 
-    List<String> getAllNumberPhone(String icp);
+    List<String> getAllNumberPhone(String icp, String conversationId);
 
-    String getActualEmail(String icp);
+    String getActualEmail(String icp, String conversationId);
 
-    String getActualNumberPhone(String icp);
+    String getActualNumberPhone(String icp, String conversationId);
 }

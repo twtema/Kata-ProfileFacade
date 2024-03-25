@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.kata.dto.DocumentDto;
 import org.kata.dto.enums.DocumentType;
 import org.kata.exception.DocumentsNotFoundException;
@@ -22,13 +23,11 @@ import java.util.List;
 @Tag(name = "Documents", description = "This class is designed to work with Individual documents")
 @RestController
 @RequestMapping("v1/document")
+@RequiredArgsConstructor
 public class DocumentController {
+
     private final DocumentService documentService;
     private final MaskingService maskingService;
-    public DocumentController (DocumentService documentService) {
-        this.documentService = documentService;
-        maskingService = new MaskingServiceImpl();
-    }
 
     @Operation(summary = "Get actual documents")
     @ApiResponses(value = {
@@ -37,8 +36,11 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getActual")
-    public ResponseEntity<List<DocumentDto>> getActualDocuments(@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getActualDocuments(icp), HttpStatus.OK);
+    public ResponseEntity<List<DocumentDto>> getActualDocuments(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(documentService.getActualDocuments(icp, conversationId), HttpStatus.OK);
     }
 
     @Operation(summary = "Get archive documents")
@@ -48,8 +50,11 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getArchive")
-    public ResponseEntity<List<DocumentDto>> getArchiveDocuments(@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getArchiveDocuments(icp), HttpStatus.OK);
+    public ResponseEntity<List<DocumentDto>> getArchiveDocuments(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(documentService.getArchiveDocuments(icp, conversationId), HttpStatus.OK);
     }
 
     @Operation(summary = "Get all documents")
@@ -59,9 +64,11 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getAll")
-    public ResponseEntity<List<DocumentDto>> getAllDocuments
-            (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getAllDocuments(icp), HttpStatus.OK);
+    public ResponseEntity<List<DocumentDto>> getAllDocuments(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(documentService.getAllDocuments(icp, conversationId), HttpStatus.OK);
     }
 
     @Operation(summary = "Get document by individual and document type")
@@ -71,15 +78,18 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getDocument")
-    public ResponseEntity<DocumentDto> getDocument
-            (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp,
-             @Parameter(description = "Document type", required = true) @RequestParam DocumentType documentType) {
-        DocumentDto document = documentService.getDocument(icp, documentType);
+    public ResponseEntity<DocumentDto> getDocument(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp,
+            @Parameter(description = "Document type", required = true) @RequestParam DocumentType documentType
+    ) {
+        DocumentDto document = documentService.getDocument(icp, documentType, conversationId);
         return new ResponseEntity<>(maskingService.maskPersonalDataGeneric(document), HttpStatus.OK);
     }
 
     /**
      * Данный контроллер по icp сущности Individual возвращает его <b>RF Passport</b>
+     *
      * @param icp Individual's ICP
      * @return Individual's RF Passport in {@link DocumentDto} format
      */
@@ -90,13 +100,16 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getDocument/RFPassport")
-    public ResponseEntity<DocumentDto> getRFPassport
-            (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.RF_PASSPORT), HttpStatus.OK);
+    public ResponseEntity<DocumentDto> getRFPassport(
+            @RequestHeader(value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.RF_PASSPORT, conversationId), HttpStatus.OK);
     }
 
     /**
      * Данный контроллер по icp сущности Individual возвращает его <b>FRGN Passport</b>
+     *
      * @param icp Individual's ICP
      * @return Individual's FRGN Passport in {@link DocumentDto} format
      */
@@ -107,13 +120,16 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getDocument/FRGNPassport")
-    public ResponseEntity<DocumentDto> getFRGNPASSPORT
-            (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.FRGN_PASSPORT), HttpStatus.OK);
+    public ResponseEntity<DocumentDto> getFrgnPassport(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.FRGN_PASSPORT, conversationId), HttpStatus.OK);
     }
 
     /**
      * Данный контроллер по icp сущности Individual возвращает его <b>INN</b>
+     *
      * @param icp Individual's ICP
      * @return Individual's INN in {@link DocumentDto} format
      */
@@ -124,13 +140,15 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getDocument/INN")
-    public ResponseEntity<DocumentDto> getINN
-            (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.INN), HttpStatus.OK);
+    public ResponseEntity<DocumentDto> getINN(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
+        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.INN, conversationId), HttpStatus.OK);
     }
 
     /**
      * Данный контроллер по icp сущности Individual возвращает его <b>SNILS</b>
+     *
      * @param icp Individual's ICP
      * @return Individual's SNILS in {@link DocumentDto} format
      */
@@ -141,13 +159,16 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getDocument/SNILS")
-    public ResponseEntity<DocumentDto> getSNILS
-            (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.SNILS), HttpStatus.OK);
+    public ResponseEntity<DocumentDto> getSNILS(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.SNILS, conversationId), HttpStatus.OK);
     }
 
     /**
      * Данный контроллер по icp сущности Individual возвращает его <b>RF Driving License</b>
+     *
      * @param icp Individual's ICP
      * @return Individual's RF Driving License in {@link DocumentDto} format
      */
@@ -158,9 +179,11 @@ public class DocumentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/getDocument/RFDrivingLicense")
-    public ResponseEntity<DocumentDto> getRFDrivingLicense
-            (@Parameter(description = "ICP identifier", required = true) @RequestParam String icp) {
-        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.RF_DRIVING_LICENSE), HttpStatus.OK);
+    public ResponseEntity<DocumentDto> getRFDrivingLicense(
+            @RequestHeader (value = "conversationId", required = false) String conversationId,
+            @Parameter(description = "ICP identifier", required = true) @RequestParam String icp
+    ) {
+        return new ResponseEntity<>(documentService.getDocument(icp, DocumentType.RF_DRIVING_LICENSE, conversationId), HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

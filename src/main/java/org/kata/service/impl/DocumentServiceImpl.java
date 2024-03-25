@@ -39,7 +39,7 @@ public class DocumentServiceImpl implements DocumentService {
      * @return List of DocumentDto.
      */
     @Override
-    public List<DocumentDto> getAllDocuments(String icp) {
+    public List<DocumentDto> getAllDocuments(String icp, String conversationId) {
         return loaderWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(urlProperties.getProfileServiceGetAllDocuments())
@@ -63,8 +63,8 @@ public class DocumentServiceImpl implements DocumentService {
      * @param icp - Individual's icp.
      * @return List of DocumentDto.
      */
-    public List<DocumentDto> getActualDocuments(String icp) {
-        return getAllDocuments(icp).stream().filter(DocumentDto::isActual).toList();
+    public List<DocumentDto> getActualDocuments(String icp, String conversationId) {
+        return getAllDocuments(icp, conversationId).stream().filter(DocumentDto::isActual).toList();
     }
 
 
@@ -75,8 +75,8 @@ public class DocumentServiceImpl implements DocumentService {
      * @return List of DocumentDto.
      */
     @Override
-    public List<DocumentDto> getArchiveDocuments(String icp) {
-        return getAllDocuments(icp).stream().filter(doc -> !doc.isActual()).toList();
+    public List<DocumentDto> getArchiveDocuments(String icp, String conversationId) {
+        return getAllDocuments(icp, conversationId).stream().filter(doc -> !doc.isActual()).toList();
     }
 
     /**
@@ -89,8 +89,8 @@ public class DocumentServiceImpl implements DocumentService {
      *                                    the specified icp and document type is not found.
      */
     @Override
-    public DocumentDto getDocument(String icp, DocumentType documentType) {
-        return getAllDocuments(icp).stream()
+    public DocumentDto getDocument(String icp, DocumentType documentType, String conversationId) {
+        return getAllDocuments(icp, conversationId).stream()
                 .filter(Document -> Document.getDocumentType()
                         .equals(documentType)).findFirst()
                 .orElseThrow(() -> new DocumentsNotFoundException(

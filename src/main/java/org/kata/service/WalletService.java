@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface WalletService {
-    List<WalletDto> getWallets(String icp);
+    List<WalletDto> getWallets(String icp, String conversationId);
 
-    BigDecimal getTotalBalance(String icp, CurrencyType currencyType);
+    BigDecimal getTotalBalance(String icp, CurrencyType currencyType, String conversationId);
 }
